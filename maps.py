@@ -13,3 +13,9 @@ class Maps:
         screen = pygame.display.set_mode(size)
         return screen
 
+    def map3(self, w, h=0):
+        if h == 0:
+            h = w
+        size = width, height = w, h
+        screen = pygame.display.set_mode(size)
+        return screen
