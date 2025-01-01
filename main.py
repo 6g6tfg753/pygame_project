@@ -35,7 +35,7 @@ class Board:
         self.Size_im = 100  # size of the image (one cell)
         all_sprites = pygame.sprite.Group()
         sprite = pygame.sprite.Sprite(all_sprites)
-        sprite.image = pygame.image.load('image_front1.png')
+        sprite.image = pygame.image.load('player/image_front1.png')
         sprite.image.set_colorkey((151, 151, 151))
         sprite.rect = sprite.image.get_rect()
         all_sprites.add(sprite)
@@ -80,7 +80,7 @@ class Board:
                     sprite.rect.x = coords[0]
                     sprite.rect.y = coords[1] + 10
                     coords[1] += 10
-                    sprite.image = pygame.image.load('image_front1.png')
+                    sprite.image = pygame.image.load('player/image_front1.png')
                     sprite.image.set_colorkey((151, 151, 151))
                     all_sprites.draw(screen)
                     pygame.display.flip()
@@ -95,7 +95,7 @@ class Board:
                     sprite.rect.x = coords[0]
                     sprite.rect.y = coords[1] - 10
                     coords[1] -= 10
-                    sprite.image = pygame.image.load('image_back1.png')
+                    sprite.image = pygame.image.load('player/image_back1.png')
                     sprite.image.set_colorkey((151, 151, 151))
                     all_sprites.draw(screen)
                     pygame.display.flip()
@@ -111,7 +111,7 @@ class Board:
                     sprite.rect.x = coords[0] + 10
                     sprite.rect.y = coords[1]
                     coords[0] += 10
-                    sprite.image = pygame.image.load('image_right1.png')
+                    sprite.image = pygame.image.load('player/image_right1.png')
                     sprite.image.set_colorkey((151, 151, 151))
                     all_sprites.draw(screen)
                     pygame.display.flip()
@@ -126,7 +126,7 @@ class Board:
                     sprite.rect.x = coords[0] - 10
                     sprite.rect.y = coords[1]
                     coords[0] -= 10
-                    sprite.image = pygame.image.load('image_left1.png')
+                    sprite.image = pygame.image.load('player/image_left1.png')
                     sprite.image.set_colorkey((151, 151, 151))
                     all_sprites.draw(screen)
                     pygame.display.flip()
