@@ -20,10 +20,9 @@ class Maps:
         screen = pygame.display.set_mode(size)
         return screen
 
-
     def field_init(self, level):
         if level == 1:
-        # 1 - cage; 0 - empty cell; -1 - finish; 2 -weapon; 3 - enemy
+        # 1 - cage; 0 - empty cell; -1 - finish; 2 -weapon; 3 - enemy, 4 - dead enemy
             map_9 = [[0, 0, 1, 0, 0, 0, 1, 0, 1],
                      [1, 0, 0, 0, 1, 0, 0, 0, 0],
                      [1, 0, 1, 0, 1, 1, 1, 1, 0],
@@ -44,7 +43,7 @@ class Maps:
                      [0, 1, 0, 0, 1, 0, 0, 1, 0],
                      [0, 0, 0, 0, 1, 1, 1, 1, -1]]
         else:
-            map_9 = [[0, 0, 1, 2, 0, 0, 0, 0, 0],
+            map_9 = [[0, 0, 1, 2, 0, 0, 0, 0, 3],
                      [0, 0, 0, 1, 1, 1, 0, 1, 0],
                      [0, 1, 0, 0, 1, 1, 0, 1, 0],
                      [0, 1, 1, 0, 0, 1, 0, 1, 0],
@@ -83,13 +82,8 @@ class Maps:
                     sprite1.rect.y = self.Size_im * b
                     self.all_sprites.add(sprite1)
                     self.objects.add(sprite1)
-                if map_9[b][a] == 3:
-                    sprite1 = pygame.sprite.Sprite(self.all_sprites)
-                    sprite1.image = pygame.image.load('maps/enemy.png')
-                    sprite1.image.set_colorkey((151, 151, 151))
-                    sprite1.rect = sprite1.image.get_rect()
-                    sprite1.rect.x = self.Size_im * a
-                    sprite1.rect.y = self.Size_im * b
-                    self.enemies.add(sprite1)
-                    self.all_sprites.add(sprite1)
 
+
+        if self.board_list:
+            map_9 = self.board_list
+        self.board_list = map_9
