@@ -3,31 +3,11 @@ import copy
 import maps
 
 
-# class Enemy(pygame.sprite.Sprite):
-#     image = pygame.image.load('maps/enemy.png')
-#     image_dead = pygame.image.load('shield.png')
-#     image_dead.set_colorkey((126, 194, 210))
-#
-#     def __init__(self, group, coords):
-#         super().__init__(group)
-#         self.image = Enemy.image
-#         self.rect = self.image.get_rect()
-#         self.rect.x = coords[0]
-#         self.rect.y = coords[1]
-#         self.group = group
-#
-#     def update(self, point):
-#         if self.rect.collidepoint(point):
-#             self.image = self.image_dead
-#
-#     def destroy(self):
-#         self.remove()
-
 class Board:
     def __init__(self):
         self.board_list = []
         self.size_field = 900
-        screen = maps.Maps.map3(self, self.size_field)
+        screen = maps.Maps.map_init(self, self.size_field)
         self.render(screen)
 
     def can_go_down(self, coords):  # check if player can go down
@@ -105,12 +85,6 @@ class Board:
         self.killed_heroes = 0
         self.utils.draw(screen)
 
-        # Add enemies
-        # self.all_enemies = pygame.sprite.Group()
-        # for i in range(9):
-        #     for k in range(9):
-        #         if self.board_list[i][k] == 3:
-        #             self.all_enemies.add(Enemy(self.all_sprites, (k * 100, i * 100)))
         screen.fill((90, 255, 127))  # green field
         self.all_sprites.draw(screen)
         pygame.display.flip()
@@ -128,7 +102,6 @@ class Board:
         flag_down = True
 
         while running:
-            # print(self.level)
             if self.state_of_the_game == False:
                 pygame.time.wait(100)
                 screen.fill((90, 255, 127))
@@ -152,7 +125,6 @@ class Board:
                     flag_down = True
                 if key[pygame.K_2]:  # lower level
                     if self.level > 0:
-                        print("1")
                         self.level -= 0.5
                         self.state_of_the_game = True
                         self.render_init(screen)
@@ -162,8 +134,7 @@ class Board:
                         flag_right = False
                         flag_left = False
                         flag_down = True
-                if key[pygame.K_3]:
-                    print("2")# lower level
+                if key[pygame.K_3]:  # higher level
                     if self.level < 4:
                         self.level += 0.5
                         self.state_of_the_game = True
@@ -300,7 +271,6 @@ class Board:
                                     killed_enemy = el
                                     killed_enemy.image = pygame.image.load('player/shield.png')
                                     killed_enemy.image.set_colorkey((126, 194, 210))
-                                    # killed_enemy.rect = killed_enemy.image.get_rect()
 
                             screen.fill((90, 255, 127))
                             self.all_sprites.draw(screen)
@@ -311,6 +281,7 @@ class Board:
                             if time_of_enemy_dying > 9:
                                 self.all_sprites.remove(killed_enemy)
                                 self.enemies.remove(killed_enemy)
+                                self.killed_heroes += 1
                                 break
                     screen.fill((90, 255, 127))
                     self.all_sprites.draw(screen)

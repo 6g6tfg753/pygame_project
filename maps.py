@@ -2,18 +2,7 @@ import pygame
 
 
 class Maps:
-    def map1(self):
-        size = width, height = 1000, 1000
-        screen = pygame.display.set_mode(size)
-        screen.fill((255, 255, 0))
-        return screen
-
-    def map2(self):
-        size = width, height = 900, 900
-        screen = pygame.display.set_mode(size)
-        return screen
-
-    def map3(self, w, h=0):
+    def map_init(self, w, h=0):
         if h == 0:
             h = w
         size = width, height = w, h
@@ -22,7 +11,7 @@ class Maps:
 
     def field_init(self, level):
         level = int(level)
-        # 1 - cage; 0 - empty cell; -1 - finish; 2 -weapon; 3 - enemy, 4 - dead enemy
+        # 1 - cage; 0 - empty cell; -1 - finish; 2 -weapon; 3 - enemy
         if level == 1:
             map_9 = [[0, 0, 1, 0, 0, 0, 1, 2, 1],
                      [1, 0, 0, 0, 1, 3, 0, 0, 0],
@@ -112,8 +101,3 @@ class Maps:
                     sprite1.rect.y = self.Size_im * b
                     self.enemies.add(sprite1)
                     self.all_sprites.add(sprite1)
-
-
-        # if self.board_list:
-        #     map_9 = self.board_list
-        # self.board_list = map_9
