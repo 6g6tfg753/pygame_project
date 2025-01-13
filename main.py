@@ -5,9 +5,39 @@ import maps
 
 class Board:
     def __init__(self):
+        self.start_flag = False
+        pygame.init()
         self.board_list = []
         self.size_field = 900
         screen = maps.Maps.map_init(self, self.size_field)
+        start_screen = pygame.display.set_mode((900, 900))
+
+        font1 = pygame.font.Font(None, 24)
+        btn_surface = pygame.Surface((150, 50))
+
+        text = font1.render("START", True, (0, 0, 0))
+        text_rect = text.get_rect(center=(btn_surface.get_width() / 2, btn_surface.get_height() / 2))
+
+        btn_rect = pygame.Rect(350, 100, 300, 50)
+
+        btn_surface.blit(text, text_rect)
+
+        start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+
+        pygame.display.update()
+
+        while not self.start_flag:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if btn_rect.collidepoint(event.pos):
+                        self.start_flag = True
+            pygame.draw.rect(btn_surface, (255, 255, 0), (1, 1, 148, 48))
+
+            btn_surface.blit(text, text_rect)
+            start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+            pygame.display.update()
         self.render(screen)
 
     def can_go_down(self, coords):  # check if player can go down
@@ -89,7 +119,6 @@ class Board:
         self.all_sprites.draw(screen)
         pygame.display.flip()
 
-
     def render(self, screen):
         self.level = 0
         self.render_init(screen)
@@ -147,7 +176,7 @@ class Board:
                         flag_down = True
                 if key[pygame.K_s] and coords[1] + self.Size_im < size[1] and self.can_go_down(coords) and self.state_of_the_game:
                     flag_down = True
-                    pygame.time.wait(100)
+                    pygame.time.wait(1)
                     screen.fill((90, 255, 127))
                     self.player.rect.x = coords[0]
                     self.player.rect.y = coords[1] + 5
@@ -164,7 +193,7 @@ class Board:
 
                 if key[pygame.K_w] and coords[1] > 0 and self.can_go_up(coords) and self.state_of_the_game:
                     flag_up = True
-                    pygame.time.wait(100)
+                    pygame.time.wait(1)
                     screen.fill((90, 255, 127))
                     self.player.rect.x = coords[0]
                     self.player.rect.y = coords[1] - 5
@@ -181,7 +210,7 @@ class Board:
 
                 if key[pygame.K_d] and coords[0] < size[0] - self.Size_im and self.can_go_right(coords) and self.state_of_the_game:
                     flag_right = True
-                    pygame.time.wait(100)
+                    pygame.time.wait(1)
                     screen.fill((90, 255, 127))
                     self.player.rect.x = coords[0] + 5
                     self.player.rect.y = coords[1]
@@ -198,7 +227,7 @@ class Board:
 
                 if key[pygame.K_a] and coords[0] > 0 and self.can_go_left(coords) and self.state_of_the_game:
                     flag_left = True
-                    pygame.time.wait(100)
+                    pygame.time.wait(1)
                     screen.fill((90, 255, 127))
                     self.player.rect.x = coords[0] - 5
                     self.player.rect.y = coords[1]
