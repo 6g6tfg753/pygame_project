@@ -97,6 +97,9 @@ class Board:
         self.objects = pygame.sprite.Group()
         self.utils = pygame.sprite.Group()
         self.end_of_the_game = pygame.sprite.Group()
+        self.move_boxes = pygame.sprite.Group()
+        self.buttons = pygame.sprite.Group()
+
 
         # player sprite
         sprite = pygame.sprite.Sprite(self.all_sprites)
@@ -241,6 +244,21 @@ class Board:
                     flag_up = False
                     flag_down = False
                     flag_right = False
+
+                if pygame.sprite.spritecollide(self.player, self.move_boxes, dokill=False):
+                    if flag_up:
+                        print(3)
+                        self.sprite_box.rect.y -= 10
+                    if flag_down:
+                        print(43242342)
+                        self.sprite_box.rect.y += 10
+                    if flag_right:
+                        print(54)
+                        self.sprite_box.rect.x += 10
+                    if flag_left:
+                        print(00)
+                        self.sprite_box.rect.x -= 10
+
 
                 if key[pygame.K_SPACE] and not shooting_flag and self.state_of_the_game:
 
