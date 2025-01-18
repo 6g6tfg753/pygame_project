@@ -5,24 +5,27 @@ import maps
 
 class Board:
     def __init__(self):
-        self.start_flag = False
         pygame.init()
         self.board_list = []
         self.size_field = 900
-        screen = maps.Maps.map_init(self, self.size_field)
-        start_screen = pygame.display.set_mode((900, 900))
+        self.screen = maps.Maps.map_init(self, self.size_field)
+        self.render(self.screen)
+
+    def starting(self):
+        self.start_flag = False
+        self.start_screen = pygame.display.set_mode((900, 900))
 
         font1 = pygame.font.Font(None, 24)
         btn_surface = pygame.Surface((150, 50))
 
         text = font1.render("START", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(btn_surface.get_width() / 2, btn_surface.get_height() / 2))
+        text_rect = text.get_rect(center=(75, 25))
 
         btn_rect = pygame.Rect(350, 100, 300, 50)
 
         btn_surface.blit(text, text_rect)
 
-        start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+        self.start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
 
         pygame.display.update()
 
@@ -36,9 +39,39 @@ class Board:
             pygame.draw.rect(btn_surface, (255, 255, 0), (1, 1, 148, 48))
 
             btn_surface.blit(text, text_rect)
-            start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+            self.start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
             pygame.display.update()
-        self.render(screen)
+
+    def finishing(self):
+        self.finish_flag = False
+        self.finish_screen = pygame.display.set_mode((900, 900))
+
+        font1 = pygame.font.Font(None, 24)
+        btn_surface = pygame.Surface((150, 50))
+
+        text = font1.render("QUIT", True, (0, 0, 0))
+        text_rect = text.get_rect(center=(75, 25))
+
+        btn_rect = pygame.Rect(350, 100, 300, 50)
+
+        btn_surface.blit(text, text_rect)
+
+        self.finish_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+
+        pygame.display.update()
+
+        while not self.finish_flag:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if btn_rect.collidepoint(event.pos):
+                        self.finish_flag = True
+            pygame.draw.rect(btn_surface, (255, 255, 0), (1, 1, 148, 48))
+
+            btn_surface.blit(text, text_rect)
+            self.finish_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+            pygame.display.update()
 
     def can_go_down(self, coords):  # check if player can go down
         self.player.rect.x = coords[0]
@@ -123,6 +156,8 @@ class Board:
         pygame.display.flip()
 
     def render(self, screen):
+        self.starting()
+        self.button_pressed_flag = False
         self.level = 0
         self.render_init(screen)
         size = (screen.get_size())
@@ -146,7 +181,7 @@ class Board:
                 if event.type == pygame.QUIT:  # exit
                     running = False
                 key = pygame.key.get_pressed()
-                if key[pygame.K_1]:  # restart
+                if key[pygame.K_1] and self.button_pressed_flag:  # restart
                     self.state_of_the_game = True
                     self.render_init(screen)
                     size = (screen.get_size())
@@ -247,18 +282,31 @@ class Board:
 
                 if pygame.sprite.spritecollide(self.player, self.move_boxes, dokill=False):
                     if flag_up:
-                        print(3)
-                        self.sprite_box.rect.y -= 10
+                        self.sprite_box.rect.y -= 5
+                        if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
+                            self.sprite_box.rect.y += 5
+                        else:
+                            self.sprite_box.rect.y -= 5
                     if flag_down:
-                        print(43242342)
-                        self.sprite_box.rect.y += 10
+                        self.sprite_box.rect.y += 5
+                        if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
+                            self.sprite_box.rect.y -= 5
+                        else:
+                            self.sprite_box.rect.y += 5
                     if flag_right:
-                        print(54)
-                        self.sprite_box.rect.x += 10
+                        self.sprite_box.rect.x += 5
+                        if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
+                            self.sprite_box.rect.x -= 5
+                        else:
+                            self.sprite_box.rect.x += 5
                     if flag_left:
-                        print(00)
-                        self.sprite_box.rect.x -= 10
-
+                        self.sprite_box.rect.x -= 5
+                        if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
+                            self.sprite_box.rect.x += 5
+                        else:
+                            self.sprite_box.rect.x -= 5
+                if pygame.sprite.groupcollide(self.buttons, self.move_boxes, dokilla=False, dokillb=False):
+                    self.button_pressed_flag = True
 
                 if key[pygame.K_SPACE] and not shooting_flag and self.state_of_the_game:
 
@@ -358,19 +406,20 @@ class Board:
                     self.end_of_the_game.add(end)
                     self.state_of_the_game = False
                 end_of_the_game_flag = pygame.sprite.spritecollide(self.player, self.finish, False)
-                if end_of_the_game_flag and self.state_of_the_game:
+                if end_of_the_game_flag and self.state_of_the_game and self.button_pressed_flag:
                     end.image = image_win
                     end.rect = end.image.get_rect()
                     end.rect.x, end.rect.y = 0, 200
                     self.end_of_the_game.add(end)
+                    print(self.level)
                     if self.level < 0:
                         self.level = 0
-                    elif self.level > 4:
-                        self.level = 0
+                    elif self.level == 0:
+                        self.finishing()
+                        running = False
                     else:
                         self.level += 1
                     self.state_of_the_game = False
 
 
 b = Board()
-#https://sketchfab.com/3d-models/companion-cube-portal-2-version-b2ec84f08f774b6883dd24cc0658fa57
