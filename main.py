@@ -1,10 +1,14 @@
 import pygame
 import copy
 import maps
+import sys
 
 
 class Board:
     def __init__(self):
+        self.artefacts = 0
+        self.killed_heroes = 0
+        self.death_count = 0
         pygame.init()
         self.board_list = []
         self.size_field = 900
@@ -15,17 +19,16 @@ class Board:
         self.start_flag = False
         self.start_screen = pygame.display.set_mode((900, 900))
 
-        font1 = pygame.font.Font(None, 24)
-        btn_surface = pygame.Surface((150, 50))
+        font = pygame.font.Font(None, 24)
+        surface = pygame.Surface((150, 50))
 
-        text = font1.render("START", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(75, 25))
+        text = font.render("START", True, (0, 0, 0))
 
         btn_rect = pygame.Rect(350, 100, 300, 50)
 
-        btn_surface.blit(text, text_rect)
+        surface.blit(text, (75, 25))
 
-        self.start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+        self.start_screen.blit(surface, (btn_rect.x, btn_rect.y))
 
         pygame.display.update()
 
@@ -36,80 +39,65 @@ class Board:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if btn_rect.collidepoint(event.pos):
                         self.start_flag = True
-            pygame.draw.rect(btn_surface, (255, 255, 0), (1, 1, 148, 48))
+            pygame.draw.rect(surface, (255, 255, 0), (1, 1, 148, 48))
 
-            btn_surface.blit(text, text_rect)
-            self.start_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+            surface.blit(text, (50, 15))
+            self.start_screen.blit(surface, (btn_rect.x, btn_rect.y))
             pygame.display.update()
 
     def finishing(self):
-        self.finish_flag = False
-        self.finish_screen = pygame.display.set_mode((900, 900))
+        pygame.font.init()
+        finishing_screen = pygame.display.set_mode((900, 900))
 
-        font1 = pygame.font.Font(None, 24)
-        btn_surface = pygame.Surface((150, 50))
+        font = pygame.font.Font(None, 36)
+        text1 = font.render(f'killed enemies: {self.killed_heroes}', True,
+                          (255, 255, 0))
+        text2 = font.render(f'levels passed: {self.level + 1}', True,
+                          (255, 255, 0))
+        text3 = font.render(f'coins collected: {self.artefacts}', True,
+                            (255, 255, 0))
+        text4 = font.render(f'death count: {self.death_count}', True,
+                            (255, 255, 0))
 
-        text = font1.render("QUIT", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(75, 25))
-
-        btn_rect = pygame.Rect(350, 100, 300, 50)
-
-        btn_surface.blit(text, text_rect)
-
-        self.finish_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
+        finishing_screen.blit(text1, (10, 50))
+        finishing_screen.blit(text2, (10, 150))
+        finishing_screen.blit(text3, (10, 250))
+        finishing_screen.blit(text4, (10, 350))
 
         pygame.display.update()
 
-        while not self.finish_flag:
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    if btn_rect.collidepoint(event.pos):
-                        self.finish_flag = True
-            pygame.draw.rect(btn_surface, (255, 255, 0), (1, 1, 148, 48))
-
-            btn_surface.blit(text, text_rect)
-            self.finish_screen.blit(btn_surface, (btn_rect.x, btn_rect.y))
-            pygame.display.update()
+                    sys.exit()
 
     def can_go_down(self, coords):  # check if player can go down
         self.player.rect.x = coords[0]
         self.player.rect.y = coords[1] + 5
-        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False):
+        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False) and not self.box_down:
             return True
         return False
 
     def can_go_up(self, coords):  # check if player can go up
         self.player.rect.x = coords[0]
         self.player.rect.y = coords[1] - 5
-        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False):
+        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False) and not self.box_up:
             return True
         return False
 
     def can_go_right(self, coords):  # check if player can go right
         self.player.rect.x = coords[0] + 5
         self.player.rect.y = coords[1]
-        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False):
+        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False) and not self.box_right:
             return True
         return False
 
     def can_go_left(self, coords):  # check if player can go left
         self.player.rect.x = coords[0] - 5
         self.player.rect.y = coords[1]
-        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False):
+        if not pygame.sprite.spritecollide(self.player, self.boxes, dokill=False) and not self.box_left:
             return True
         return False
-
-    def add_util(self, height):
-        if height > 5:
-            return
-        utilite = pygame.sprite.Sprite()
-        utilite.image = pygame.image.load('maps/mine_mini.png')
-        utilite.image.set_colorkey((251, 251, 251))
-        utilite.rect = utilite.image.get_rect()
-        utilite.rect.x, utilite.rect.y = 0, height * 30
-        self.utils.add(utilite)
 
     def find_object_sprite(self, player):
         for el in self.objects.sprites():
@@ -147,8 +135,7 @@ class Board:
         #print(self.level)
 
         #Utils
-        self.artefacts = 0
-        self.killed_heroes = 0
+
         self.utils.draw(screen)
 
         screen.fill((90, 255, 127))  # green field
@@ -156,6 +143,10 @@ class Board:
         pygame.display.flip()
 
     def render(self, screen):
+        self.box_up = False
+        self.box_down = False
+        self.box_left = False
+        self.box_right = False
         self.starting()
         self.button_pressed_flag = False
         self.level = 0
@@ -169,6 +160,7 @@ class Board:
         flag_down = True
 
         while running:
+
             if self.state_of_the_game == False:
                 pygame.time.wait(100)
                 screen.fill((90, 255, 127))
@@ -181,7 +173,7 @@ class Board:
                 if event.type == pygame.QUIT:  # exit
                     running = False
                 key = pygame.key.get_pressed()
-                if key[pygame.K_1] and self.button_pressed_flag:  # restart
+                if key[pygame.K_1] and self.button_pressed_flag:  # new level
                     self.state_of_the_game = True
                     self.render_init(screen)
                     size = (screen.get_size())
@@ -190,7 +182,16 @@ class Board:
                     flag_right = False
                     flag_left = False
                     flag_down = True
-                if key[pygame.K_2]:  # lower level
+                if key[pygame.K_2]:  # restart
+                    self.state_of_the_game = True
+                    self.render_init(screen)
+                    size = (screen.get_size())
+                    coords = [0, 0]
+                    flag_up = False
+                    flag_right = False
+                    flag_left = False
+                    flag_down = True
+                if key[pygame.K_3]:  # lower level
                     if self.level > 0:
                         self.level -= 0.5
                         self.state_of_the_game = True
@@ -201,7 +202,7 @@ class Board:
                         flag_right = False
                         flag_left = False
                         flag_down = True
-                if key[pygame.K_3]:  # higher level
+                if key[pygame.K_4]:  # higher level
                     if self.level < 4:
                         self.level += 0.5
                         self.state_of_the_game = True
@@ -279,30 +280,41 @@ class Board:
                     flag_up = False
                     flag_down = False
                     flag_right = False
+                self.box_up = False
+                self.box_down = False
+                self.box_left = False
+                self.box_right = False
 
                 if pygame.sprite.spritecollide(self.player, self.move_boxes, dokill=False):
-                    if flag_up:
+
+                    if flag_up and 800 > self.sprite_box.rect.y > 0:
                         self.sprite_box.rect.y -= 5
                         if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
                             self.sprite_box.rect.y += 5
+                            self.box_up = True
                         else:
                             self.sprite_box.rect.y -= 5
-                    if flag_down:
+                    if flag_down and 800 > self.sprite_box.rect.y > 0:
                         self.sprite_box.rect.y += 5
                         if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
+                            print(self.sprite_box.rect.x, self.sprite_box.rect.y)
+
                             self.sprite_box.rect.y -= 5
+                            self.box_down = True
                         else:
                             self.sprite_box.rect.y += 5
-                    if flag_right:
+                    if flag_right and 800 > self.sprite_box.rect.x > 0:
                         self.sprite_box.rect.x += 5
                         if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
                             self.sprite_box.rect.x -= 5
+                            self.box_right = True
                         else:
                             self.sprite_box.rect.x += 5
-                    if flag_left:
+                    if flag_left and 800 > self.sprite_box.rect.x > 0:
                         self.sprite_box.rect.x -= 5
                         if pygame.sprite.groupcollide(self.move_boxes, self.boxes, dokilla=False, dokillb=False):
                             self.sprite_box.rect.x += 5
+                            self.box_left = True
                         else:
                             self.sprite_box.rect.x -= 5
                 if pygame.sprite.groupcollide(self.buttons, self.move_boxes, dokilla=False, dokillb=False):
@@ -395,7 +407,6 @@ class Board:
                     obj = self.find_object_sprite(self.player)
                     self.all_sprites.remove(obj)
                     self.objects.remove(obj)
-                    self.add_util(self.artefacts)
                     self.artefacts += 1
 
                 end_of_the_game_flag = pygame.sprite.spritecollide(self.player, self.enemies, False)
@@ -405,16 +416,16 @@ class Board:
                     end.rect.x, end.rect.y = 0, 200
                     self.end_of_the_game.add(end)
                     self.state_of_the_game = False
+                    self.death_count += 1
                 end_of_the_game_flag = pygame.sprite.spritecollide(self.player, self.finish, False)
                 if end_of_the_game_flag and self.state_of_the_game and self.button_pressed_flag:
                     end.image = image_win
                     end.rect = end.image.get_rect()
                     end.rect.x, end.rect.y = 0, 200
                     self.end_of_the_game.add(end)
-                    print(self.level)
                     if self.level < 0:
                         self.level = 0
-                    elif self.level == 0:
+                    elif self.level == 4:
                         self.finishing()
                         running = False
                     else:

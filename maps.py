@@ -49,8 +49,8 @@ class Maps:
                     self.finish.add(sprite1)
                 if map_9[b][a] == 2:
                     sprite1 = pygame.sprite.Sprite(self.all_sprites)
-                    sprite1.image = pygame.image.load('maps/mine.png')
-                    sprite1.image.set_colorkey((151, 151, 151))
+                    sprite1.image = pygame.image.load('maps/coin.png')
+                    sprite1.image.set_colorkey((255, 255, 255))
                     sprite1.rect = sprite1.image.get_rect()
                     sprite1.rect.x = self.Size_im * a
                     sprite1.rect.y = self.Size_im * b
