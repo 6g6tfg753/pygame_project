@@ -104,8 +104,26 @@ class Board:
             if pygame.sprite.spritecollide(player, [el], False):
                 return el
 
+    ###
+    def add_util(self, height, width):
+        if height > 5:
+            return
+        utilite = pygame.sprite.Sprite()
+        if width == 0:
+            utilite.image = pygame.image.load('maps/coin_mini.png')
+        else:
+            utilite.image = pygame.image.load('maps/killed_mini.png')
+
+        utilite.image.set_colorkey((251, 251, 251))
+        utilite.rect = utilite.image.get_rect()
+        utilite.rect.x, utilite.rect.y = width * 30, height * 30
+        self.utils.add(utilite)
+    ###
+
     def render_init(self, screen):
         self.Size_im = 100  # size of the image (one cell)
+        self.artefacts = 0
+        self.killed_heroes = 0
 
         # flag of the game
         self.state_of_the_game = True
@@ -388,6 +406,7 @@ class Board:
                             if time_of_enemy_dying > 9:
                                 self.all_sprites.remove(killed_enemy)
                                 self.enemies.remove(killed_enemy)
+                                self.add_util(self.killed_heroes, 1)
                                 self.killed_heroes += 1
                                 break
                     screen.fill((90, 255, 127))
@@ -407,6 +426,7 @@ class Board:
                     obj = self.find_object_sprite(self.player)
                     self.all_sprites.remove(obj)
                     self.objects.remove(obj)
+                    self.add_util(self.artefacts, 0)
                     self.artefacts += 1
 
                 end_of_the_game_flag = pygame.sprite.spritecollide(self.player, self.enemies, False)
