@@ -401,6 +401,8 @@ class Board:
                             for el in self.enemies.sprites():
                                 if el.rect.collidepoint(bullet_coords):
                                     killed_enemy = el
+                                    if self.enemies.sprites().index(killed_enemy) < len(self.enemy_flags):
+                                        self.enemy_flags[self.enemies.sprites().index(killed_enemy)] = 0
                                     killed_enemy.image = pygame.image.load('player/shield.png')
                                     killed_enemy.image.set_colorkey((126, 194, 210))
 
@@ -414,6 +416,7 @@ class Board:
                                 self.all_sprites.remove(killed_enemy)
                                 self.enemies.remove(killed_enemy)
                                 self.add_util(self.killed_heroes, 1)
+                                self.enemy_flags.remove(0)
                                 self.killed_heroes += 1
                                 break
                     screen.fill((90, 255, 127))
@@ -463,6 +466,7 @@ class Board:
             if self.time // 1000000 == self.time / 1000000 or self.time // 1500000 == self.time / 1500000:
                 c = 0
                 for el in self.enemies:
+                    print(self.enemy_flags)
                     a = el.rect.y // 100
                     b = el.rect.x // 100
                     flag = self.enemy_flags[c]
