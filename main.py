@@ -466,7 +466,6 @@ class Board:
             if self.time // 1000000 == self.time / 1000000 or self.time // 1500000 == self.time / 1500000:
                 c = 0
                 for el in self.enemies:
-                    print(self.enemy_flags)
                     a = el.rect.y // 100
                     b = el.rect.x // 100
                     flag = self.enemy_flags[c]
@@ -483,7 +482,7 @@ class Board:
                         elif self.exists(a, b - flag) and self.map[a][b - flag] == 0:
                             self.enemy_flags[c] *= -1
                         else:
-                            self.enemy_direction[c  ] += 1
+                            self.enemy_direction[c] += 1
                     c += 1
             self.time += 1
 
