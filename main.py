@@ -153,12 +153,20 @@ class Board:
         #print(self.level)
 
         #Utils
-
         self.utils.draw(screen)
 
         screen.fill((90, 255, 127))  # green field
         self.all_sprites.draw(screen)
         pygame.display.flip()
+
+        self.enemy_flags = []
+        self.enemy_direction = []
+        c = 0
+        for el in self.enemies:
+            self.enemy_flags.append(1)
+            self.enemy_direction.append(c % 2)
+            c += 1
+        self.time = 0
 
     def render(self, screen):
         self.box_up = False
@@ -178,7 +186,6 @@ class Board:
         flag_down = True
 
         while running:
-
             if self.state_of_the_game == False:
                 pygame.time.wait(100)
                 screen.fill((90, 255, 127))
@@ -438,7 +445,7 @@ class Board:
                     self.state_of_the_game = False
                     self.death_count += 1
                 end_of_the_game_flag = pygame.sprite.spritecollide(self.player, self.finish, False)
-                if end_of_the_game_flag and self.state_of_the_game and self.button_pressed_flag:
+                if end_of_the_game_flag and self.state_of_the_game:
                     end.image = image_win
                     end.rect = end.image.get_rect()
                     end.rect.x, end.rect.y = 0, 200
@@ -452,5 +459,33 @@ class Board:
                         self.level += 1
                     self.state_of_the_game = False
 
+            # enemy moving
+            if self.time // 1000000 == self.time / 1000000 or self.time // 1500000 == self.time / 1500000:
+                c = 0
+                for el in self.enemies:
+                    a = el.rect.y // 100
+                    b = el.rect.x // 100
+                    flag = self.enemy_flags[c]
+                    if self.enemy_direction[c] % 2 == 0 and self.time // 1000000 == self.time / 1000000:
+                        if self.exists(a + flag, b) and self.map[a + flag][b] == 0:
+                            el.rect.y += 100 * flag
+                        elif self.exists(a - flag, b) and self.map[a - flag][b] == 0:
+                            self.enemy_flags[c] *= -1
+                        else:
+                            self.enemy_direction[c] += 1
+                    else:
+                        if self.exists(a, b + flag) and self.map[a][b + flag] == 0:
+                            el.rect.x += 100 * flag
+                        elif self.exists(a, b - flag) and self.map[a][b - flag] == 0:
+                            self.enemy_flags[c] *= -1
+                        else:
+                            self.enemy_direction[c  ] += 1
+                    c += 1
+            self.time += 1
+
+    def exists(self, a, b):
+        if a > 8 or a < 0 or b > 8 or b < 0:
+            return False
+        return True
 
 b = Board()

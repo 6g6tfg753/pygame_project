@@ -27,6 +27,8 @@ class Maps:
             mas = [int(x) for x in el[1:-3].split(", ")]
             map_9.append(mas)
 
+        self.map = map_9
+
         for a in range(9):
             for b in range(9):
                 if map_9[b][a] == 1:
