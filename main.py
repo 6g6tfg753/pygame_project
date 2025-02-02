@@ -104,7 +104,6 @@ class Board:
             if pygame.sprite.spritecollide(player, [el], False):
                 return el
 
-    ###
     def add_util(self, height, width):
         if height > 5:
             return
@@ -118,12 +117,11 @@ class Board:
         utilite.rect = utilite.image.get_rect()
         utilite.rect.x, utilite.rect.y = width * 30, height * 30
         self.utils.add(utilite)
-    ###
 
     def render_init(self, screen):
         self.Size_im = 100  # size of the image (one cell)
         self.artefacts = 0
-        self.killed_heroes = 0
+        self.killed_heroes_level = 0
 
         # flag of the game
         self.state_of_the_game = True
@@ -415,8 +413,9 @@ class Board:
                             if time_of_enemy_dying > 9:
                                 self.all_sprites.remove(killed_enemy)
                                 self.enemies.remove(killed_enemy)
-                                self.add_util(self.killed_heroes, 1)
+                                self.add_util(self.killed_heroes_level, 1)
                                 self.enemy_flags.remove(0)
+                                self.killed_heroes_level += 1
                                 self.killed_heroes += 1
                                 break
                     screen.fill((90, 255, 127))
